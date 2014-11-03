@@ -2,7 +2,7 @@ local collision_damage = 5
 local projectile_damage = 10
 local empty_damage = 5
 local control_point = {
-	score = 20,
+	score = 10,
 	bullets = 10,
 	obstacles = 5
 }
@@ -58,8 +58,8 @@ function love.load()
 	while ex("robot_ai" .. pn .. ".so") do
 		players[pn] = {
 			hp = 100,
-			bullets = 15,
-			obstacles = 5,
+			bullets = 25,
+			obstacles = 10,
 			score = 0,
 			dir = math.random(6) - 1,
 			index = pn
@@ -98,6 +98,7 @@ end
 function damage(player, dam)
 	player.hp = player.hp - dam
 	player.score = player.score - dam
+	player.damaged = true
 end
 
 function add_score(player, sco)
@@ -200,39 +201,34 @@ end
 
 function check_robot_collision(walk)
 	local any_at_all = false
-	local seen = {}
+	local erase = {}
 	for player, pos in pairs(walk) do
-		if seen[player] == nil then
-			local x, y = pos[1], pos[2]
-			local nx, ny = get_neighbor(x, y, player.dir)
-			local any = false
-			seen[player] = true
-			for p2, pos2 in pairs(walk) do
-				if seen[player] == nil then
-					local x2, y2 = pos2[1], pos2[2]
-					local nx2, ny2 = get_neighbor(x2, y2, p2.dir)
-					if (nx2 == nx and ny2 == ny) or 
-					(nx2 == x and ny2 == y and ((6 - player.dir + p2.dir) % 6) == 3) --[[opposite dirs]] then
-						any = true
-						any_at_all = true
-						damage(p2, collision_damage)
-						p2.wannaWalk = false
-						seen[p2] = false
-					end
+		local x, y = pos[1], pos[2]
+		local nx, ny = get_neighbor(x, y, player.dir)
+		local any = false
+		for p2, pos2 in pairs(walk) do
+			if p2 ~= player then
+				local x2, y2 = pos2[1], pos2[2]
+				local nx2, ny2 = get_neighbor(x2, y2, p2.dir)
+				if (nx2 == nx and ny2 == ny) or 
+				(nx2 == x and ny2 == y and ((6 - player.dir + p2.dir) % 6) == 3) --[[opposite dirs]] then
+					any = true
+					any_at_all = true
+					damage(p2, collision_damage)
+					p2.wannaWalk = false
+					erase[p2] = true
 				end
 			end
-			if any then
-				player.wannaWalk = false
-				seen[player] = false
-				damage(grid[x][y][2], collision_damage)
-			end
+		end
+		if any then
+			player.wannaWalk = false
+			erase[player] = true
+			damage(grid[x][y][2], collision_damage)
 		end
 	end
 
-	for p, erase in pairs(seen) do
-		if erase == false then
-			walk[p] = nil
-		end
+	for p in pairs(erase) do
+		walk[p] = nil
 	end
 
 	return any_at_all
@@ -324,6 +320,9 @@ function turn_update()
 			end
 		end
 	end
+	for _, p in pairs(players) do
+		p.damaged = false
+	end
 end
 
 function end_game()
@@ -345,7 +344,7 @@ function end_turn()
 				if p.hp <= 0 then
 					print('Player #' .. p.index .. ' died')
 					-- process death
-					add_score(p, -50)
+					add_score(p, -250)
 					grid[i][j] = {0}
 					extra_info[i][j][2] = true
 				else
@@ -441,7 +440,11 @@ function draw_grid()
 				y = y + h / 2
 				local r = math.pi * (((grid[i][j][2].dir or 3) + 3) % 6) / 3
 				if grid[i][j][1] == 2 then -- is a player
+					if grid[i][j][2].damaged then
+						love.graphics.setColor(255, 150, 150)
+					end
 					love.graphics.draw(grid[i][j][2].img, x, y, r, 1, 1, w / 2, h / 2)
+					love.graphics.setColor(255, 255, 255)
 				else
 					love.graphics.draw(_G['tile' .. grid[i][j][1]], x, y, r, 1, 1, w / 2, h / 2)
 				end
