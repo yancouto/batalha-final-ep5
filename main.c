@@ -92,16 +92,18 @@ static void read_map(lua_State *L, Grid *g, Position *pos) {
 static int l_prepare_game(lua_State *L) {
 	Grid g;
 	Position pos;
+	int turnCount = lua_tointeger(L, 4);
 	read_map(L, &g, &pos);
-	prepareGame(&g, pos);
+	prepareGame(&g, pos, turnCount);
 	return 0;
 }
 
 static int l_process_turn(lua_State *L) {
 	static Grid g;
 	Position pos;
+	int turnsLeft = lua_tointeger(L, 4);
 	read_map(L, &g, &pos);
-	lua_pushinteger(L, processTurn(&g, pos));
+	lua_pushinteger(L, processTurn(&g, pos, turnsLeft));
 	return 1;
 }
 

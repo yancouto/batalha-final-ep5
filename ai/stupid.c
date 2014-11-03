@@ -6,7 +6,7 @@ int valid(Position p, int m, int n) {
 	return p.x >= 0 && p.x < m && p.y >= 0 && p.y < n;
 }
 
-void prepareGame(Grid *g, Position p) {
+void prepareGame(Grid *g, Position p, int turnCount) {
 	int i;
 	look_dir = 0;
 	for(i = 0; i < 6; i++) {
@@ -21,7 +21,7 @@ void prepareGame(Grid *g, Position p) {
 	}
 }
 
-Action processTurn(Grid *g, Position p) {
+Action processTurn(Grid *g, Position p, int turnsLeft) {
 	Robot *r = &g->map[p.x][p.y].object.robot;
 	if(r->dir != look_dir)
 		return TURN_RIGHT;

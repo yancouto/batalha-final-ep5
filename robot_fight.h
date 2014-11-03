@@ -53,13 +53,15 @@ Position getNeighbor(Position pos, Direction dir);
 	IMPLEMENTAR
 	grid - o mapa
 	pos - a posição do seu robô
+	turnCont - quantos turnos o jogo vai ter
 */
-void prepareGame(Grid *grid, Position pos);
+void prepareGame(Grid *grid, Position pos, int turnCount);
 
 /*
 	IMPLEMENTAR
 	grid - o mapa
 	pos - a posição do seu robô
+	turnsLeft - quantos turnos depois desse ainda restam
 	Devolve:
 		STAND: Não faz nada (Ou domina ControlPoint se estiver nele)
 		OBSTACLE_LEFT: Coloca obstáculo na esquerda-tras
@@ -72,4 +74,4 @@ void prepareGame(Grid *grid, Position pos);
 		SHOOT_CENTER: Atira para frente
 		SHOOT_RIGHT: Atira para direita-frente
 */
-Action processTurn(Grid *grid, Position pos);
+Action processTurn(Grid *grid, Position pos, int turnsLeft);

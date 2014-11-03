@@ -9,6 +9,7 @@ local control_point = {
 local max_turns = 50
 local obstacle_turns = 5
 local turn_time = .75
+local turn_count = 0
 
 game_playing = true
 
@@ -77,7 +78,7 @@ function love.load()
 	for i = 1, m do
 		for j = 1, n do
 			if grid[i][j][1] == 2 then
-				grid[i][j][2].ai.prepare_game(grid, {i, j}, extra_info)
+				grid[i][j][2].ai.prepare_game(grid, {i, j}, extra_info, max_turns)
 			end
 		end
 	end
@@ -370,7 +371,7 @@ function do_turn()
 	for i = 1, m do
 		for j = 1, n do
 			if grid[i][j][1] == 2 then
-				local act = players[grid[i][j][2].index].ai.process_turn(grid, {i, j}, extra_info)
+				local act = players[grid[i][j][2].index].ai.process_turn(grid, {i, j}, extra_info, max_turns - turn_count)
 				if act == 20 then
 					players[grid[i][j][2].index].wannaWalk = true
 					walk[players[grid[i][j][2].index]] = {i, j}
@@ -407,7 +408,6 @@ function do_turn()
 end
 
 count = 0
-turn_count = 1
 function love.update(dt)
 	if not game_playing then return end
 	count = count + dt
