@@ -1,5 +1,7 @@
 #include "lua-5.1.5/src/lua.h"
 #include "lua-5.1.5/src/lauxlib.h"
+#include <time.h>
+#include <stdlib.h>
 #include <stdio.h>
 #define _JOIN(a,b) a ## b
 #define JOIN(a, b) _JOIN(a, b)
@@ -115,6 +117,8 @@ static const struct luaL_reg funcs[] = {
 
 int JOIN(luaopen_robot_ai, PLAYER)(lua_State *L) {
 	char name[100];
+	srand(time(NULL));
+	rand(); rand();
 	sprintf(name, "robot_ai%d", PLAYER);
 	luaL_openlib(L, name, funcs, 0);
 	return 1;

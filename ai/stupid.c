@@ -1,5 +1,7 @@
 #include "../robot_fight.h"
 
+/* Feito por Yan, O Monitor Mais Rápido do Oeste */
+
 static Direction lookDir;
 static char charging;
 
@@ -16,36 +18,31 @@ Action bestTurn(Direction from, Direction to) {
 	else return TURN_RIGHT;
 }
 
-char findControl(Grid *g, Position p) {
-	int i;
-	lookDir = 0;
-	for(i = 0; i < 6; i++) {
-		Position s = getNeighbor(p, i);
-		while(valid(s, g->m, g->n)) {
-			if(g->map[s.x][s.y].type == NONE && g->map[s.x][s.y].isControlPoint) {
-				lookDir = i;
-				return 1;
-			}
-			s = getNeighbor(s, i);
-		}
-	}
-	return 0;
+int isEmptyControl(Tile *t) {
+	return t->isControlPoint && t->type == NONE;
 }
 
-char find(Grid *g, Position p, TileType t) {
-	int i;
-	lookDir = 0;
+int isRobot(Tile *t) {
+	return t->type == ROBOT;
+}
+
+char find(Grid *g, Position p, int (*check)(Tile*)) {
+	int i, s_look = 0, s_size = 100000, dist;
 	for(i = 0; i < 6; i++) {
 		Position s = getNeighbor(p, i);
+		dist = 1;
 		while(valid(s, g->m, g->n)) {
-			if(g->map[s.x][s.y].type == t) {
-				lookDir = i;
-				return 1;
+			if(check(&g->map[s.x][s.y])) {
+				s_look = i;
+				s_size = dist;
 			}
 			s = getNeighbor(s, i);
+			if(++dist > s_size)
+				break;
 		}
 	}
-	return 0;
+	lookDir = s_look;
+	return lookDir != 0;
 }
 
 Action processTurn(Grid *g, Position p, int turnsLeft) {
@@ -57,7 +54,7 @@ Action processTurn(Grid *g, Position p, int turnsLeft) {
 				charging = 0;
 			return STAND;
 		}
-		if(findControl(g, p)) {
+		if(find(g, p, isEmptyControl)) {
 			if(lookDir == r->dir)
 				return WALK;
 			else
@@ -68,7 +65,7 @@ Action processTurn(Grid *g, Position p, int turnsLeft) {
 		else
 			return TURN_LEFT;
 	}
-	else if(find(g, p, ROBOT)) {
+	else if(find(g, p, isRobot)) {
 		if(lookDir == r->dir)
 			return SHOOT_CENTER;
 		else

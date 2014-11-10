@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 /*Runner_basic -- Codename: Billy the Robot*/
-
+/*Criado e desenvolvido pelo meu melhor amigo, Ricardo Fonseca*/
 /*                                            
 
 	Billy the Robot nao conhece limites. Ele
@@ -17,16 +17,6 @@
 
 */
 
-/*Funcao para gerar uma seed pseudo-aleatoria, que mede
-o total de pseudo-ciclos desde que o processador
-foi ligado
-*/
-unsigned long long rdtsc(){
-    unsigned int lo,hi;
-    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
-    return ((unsigned long long)hi << 32) | lo;
-}
-
 /*Segura a direcao aleatoria que Billy esta seguindo*/
 static int turn_dir = -1;
 
@@ -37,10 +27,7 @@ int valid(Position p, int m, int n, Grid *g) {
 }
 
 void prepareGame(Grid *g, Position p, int turnCount) {
-
-	srand (rdtsc());
-	rand();rand();
-
+	
 }
 
 /*Dada uma direcao inicial e uma direcao final, ve

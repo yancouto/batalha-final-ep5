@@ -1,7 +1,7 @@
 #include "../robot_fight.h"
 
 /*Controller_basic -- Codename: SleepyTron*/
-
+/*Criado e desenvolvido pelo meu melhor amigo, Ricardo Fonseca*/
 /*                                            
 
 	Essa inteligencia artificial defensiva

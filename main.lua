@@ -301,8 +301,11 @@ function do_movement(walk)
 			if grid[i][j][1] == 3 then
 				local ni, nj = get_neighbor(i, j, grid[i][j][2].dir)
 				if temp_grid[ni] and temp_grid[ni][nj] then
-					if temp_grid[ni][nj][1] == 3 or temp_grid[ni][nj] == 1 then
+					if temp_grid[ni][nj][1] == 1 then
+						table.insert(temp_grid[ni][nj][2], grid[i][j][2].owner_index)
+					elseif temp_grid[ni][nj][1] == 3 then
 						temp_grid[ni][nj][1] = 1
+						temp_grid[ni][nj][2] = {temp_grid[ni][nj][2].owner_index, grid[i][j][2].owner_index}
 					elseif temp_grid[ni][nj][1] == 2 then
 						damage(temp_grid[ni][nj][2], projectile_damage)
 						add_score(players[grid[i][j][2].owner_index], projectile_damage)
@@ -328,6 +331,12 @@ function do_movement(walk)
 				end
 			elseif temp_grid[i][j][1] == 1 then
 				extra_info[i][j][2] = true
+				if grid[i][j][1] == 2 then
+					for _, ind in ipairs(temp_grid[i][j][2]) do
+						damage(grid[i][j][2], projectile_damage)
+						add_score(players[ind], projectile_damage)
+					end
+				end
 			end
 		end
 	end
