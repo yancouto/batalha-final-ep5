@@ -136,9 +136,35 @@ function place_obstacle(i, j, dir)
 	end
 	p.obstacles = p.obstacles - 1
 	if not grid[ni] or not grid[ni][nj] or grid[ni][nj][1] == 1 or grid[ni][nj] == 2 then return end
-	local a = grid[ni][nj]	
-	a[1] = 1
-	a[2] = {turns_left = obstacle_turns, owner_index = p.index}
+	local a = temp_grid[ni][nj]
+	if a[1] == 1 then
+		if not a.multiple then
+			a.multiple = true
+			a.owners = {a[2].owner_index}
+			a[2] = nil
+		end
+		table.insert(a.owners, p.index)
+	else
+		a[1] = 1
+		a[2] = {turns_left = obstacle_turns, owner_index = p.index}
+	end
+end
+
+function process_obstacles()
+	for i = 1, m do
+		for j = 1, n do
+			if temp_grid[i][j][1] == 1 then
+				local a = temp_grid[i][j]
+				if a.multiple then
+					for _, owner in ipairs(a.owners) do
+						damage(players[owner], collision_damage)
+					end
+				else
+					grid[i][j] = a
+				end
+			end
+		end
+	end
 end
 
 local actions = {
@@ -382,6 +408,11 @@ function do_turn()
 	end
 	table.sort(act_queue, function(a, b) return a[1] < b[1] end)
 
+	for i = 1, m do
+		for j = 1, n do
+			temp_grid[i][j] = {0}
+		end
+	end
 
 	-- ficar parado e colocar obstaculo
 	local i = 1
@@ -389,6 +420,8 @@ function do_turn()
 		actions[act_queue[i][1]](act_queue[i][2], act_queue[i][3])
 		i = i + 1
 	end
+
+	process_obstacles()
 
 	-- do movements
 	repeat
