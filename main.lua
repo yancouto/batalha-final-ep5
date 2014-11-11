@@ -83,6 +83,12 @@ function love.load()
 			end
 		end
 	end
+
+	sound = {}
+
+	for _, name in ipairs(love.filesystem.getDirectoryItems("sound")) do
+		sound[name] = love.audio.newSource("sound/" .. name)
+	end
 end
 
 do
@@ -406,12 +412,15 @@ function do_turn()
 	for i = 1, m do
 		for j = 1, n do
 			if grid[i][j][1] == 2 then
-				local act = players[grid[i][j][2].index].ai.process_turn(grid, {i, j}, extra_info, max_turns - turn_count)
+				local act, song_name = players[grid[i][j][2].index].ai.process_turn(grid, {i, j}, extra_info, max_turns - turn_count)
 				if act == 20 then
 					players[grid[i][j][2].index].wannaWalk = true
 					walk[players[grid[i][j][2].index]] = {i, j}
 				else
 					act_queue[#act_queue + 1] = {act, i, j}
+				end
+				if song_name then
+					sound[song_name]:play()
 				end
 			end
 		end
