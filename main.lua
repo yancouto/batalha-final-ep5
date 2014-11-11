@@ -78,7 +78,8 @@ function love.load()
 	for i = 1, m do
 		for j = 1, n do
 			if grid[i][j][1] == 2 then
-				grid[i][j][2].ai.prepare_game(grid, {i, j}, extra_info, max_turns)
+				local name = grid[i][j][2].ai.prepare_game(grid, {i, j}, extra_info, max_turns)
+				grid[i][j][2].name = name or string.format("Player %d", grid[i][j][2].index)
 			end
 		end
 	end
@@ -377,7 +378,7 @@ function end_turn()
 			if grid[i][j][1] == 2 then
 				local p = grid[i][j][2]
 				if p.hp <= 0 then
-					print('Player #' .. p.index .. ' died')
+					print(p.name .. ' died')
 					-- process death
 					add_score(p, -250)
 					grid[i][j] = {0}
@@ -500,8 +501,8 @@ function draw_player_info()
 		local p = players[i]
 		love.graphics.setColor(p.color)
 		love.graphics.print(string.format(
-			'Player %d:\n HP: %d/100\n Bullets: %d\n Obstacles: %d\n Score: %d',
-			 i, p.hp, p.bullets, p.obstacles, p.score), -70 + 150 * i, 5)
+			'%s:\n HP: %d/100\n Bullets: %d\n Obstacles: %d\n Score: %d',
+			 p.name, p.hp, p.bullets, p.obstacles, p.score), -70 + 150 * i, 5)
 	end
 	love.graphics.setColor(255, 255, 255)
 end
@@ -522,7 +523,7 @@ function love.draw()
 		if players_win[1].score == players_win[2].score then
 			love.graphics.print('It\'s a draw!', 200, 200)
 		else
-			love.graphics.print('Player #' .. players_win[1].index .. ' won!!!', 100, 200)
+			love.graphics.print(players_win[1].name .. ' won!!!', 100, 200)
 		end
 	end
 end

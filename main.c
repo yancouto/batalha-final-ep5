@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #define _JOIN(a,b) a ## b
 #define JOIN(a, b) _JOIN(a, b)
 #define __INCL_CODE(str) #str
@@ -17,6 +18,13 @@ Position getNeighbor(Position pos, Direction dir) {
 		{{-1, 0}, {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}}
 	};
 	return (Position) {pos.x + neighbors[pos.y % 2][dir][0], pos.y + neighbors[pos.y % 2][dir][1]};
+}
+
+static char name[MAX_NOME + 1];
+
+void setName(char *str) {
+	strncpy(name, str, MAX_NOME);
+	name[MAX_NOME] = '\0';
 }
 
 static int get_integer(lua_State *L, int ind, char *name) {
@@ -96,8 +104,13 @@ static int l_prepare_game(lua_State *L) {
 	Position pos;
 	int turnCount = lua_tointeger(L, 4);
 	read_map(L, &g, &pos);
+	name[0] = '\0';
 	prepareGame(&g, pos, turnCount);
-	return 0;
+	if(name[0]) {
+		lua_pushstring(L, name);
+		return 1;
+	} else
+		return 0;
 }
 
 static int l_process_turn(lua_State *L) {

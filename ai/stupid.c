@@ -11,6 +11,7 @@ int valid(Position p, int m, int n) {
 
 void prepareGame(Grid *g, Position p, int turnCount) {
 	charging = 0;
+	setName("I'm stupid!!!!!!!!!");
 }
 
 Action bestTurn(Direction from, Direction to) {

@@ -49,6 +49,14 @@ typedef enum {STAND = 0, OBSTACLE_LEFT = 10, OBSTACLE_CENTER, OBSTACLE_RIGHT, WA
 */
 Position getNeighbor(Position pos, Direction dir);
 
+#define MAX_NOME 15
+/*
+	Deve ser chamada de dentro do prepareGame. Faz esse ser o nome do seu personagem.
+	Note que o nome é restrito a MAX_NOME caracteres, o resto será apagado.
+	Você deve limpar sua própria memória se alocou alguma.
+*/
+void setName(char *name);
+
 /*
 	IMPLEMENTAR
 	grid - o mapa
