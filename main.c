@@ -21,10 +21,16 @@ Position getNeighbor(Position pos, Direction dir) {
 }
 
 static char name[MAX_NOME + 1];
+static char songName[101];
 
-void setName(char *str) {
+void setName(const char *str) {
 	strncpy(name, str, MAX_NOME);
 	name[MAX_NOME] = '\0';
+}
+
+void playSong(const char *str) {
+	strncpy(songName, str, 100);
+	songName[100] = '\0';
 }
 
 static int get_integer(lua_State *L, int ind, char *name) {
@@ -118,8 +124,13 @@ static int l_process_turn(lua_State *L) {
 	Position pos;
 	int turnsLeft = lua_tointeger(L, 4);
 	read_map(L, &g, &pos);
+	songName[0] = '\0';
 	lua_pushinteger(L, processTurn(&g, pos, turnsLeft));
-	return 1;
+	if(songName[0]) {
+		lua_pushstring(L, songName);
+		return 2;
+	} else
+		return 1;
 }
 
 static const struct luaL_reg funcs[] = {

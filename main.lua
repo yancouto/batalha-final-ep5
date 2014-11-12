@@ -62,6 +62,7 @@ function love.load()
 			obstacles = 10,
 			score = 0,
 			dir = math.random(6) - 1,
+			song_played = -3,
 			index = pn
 		}
 		players[pn].ai = require("robot_ai" .. pn)
@@ -412,15 +413,16 @@ function do_turn()
 	for i = 1, m do
 		for j = 1, n do
 			if grid[i][j][1] == 2 then
-				local act, song_name = players[grid[i][j][2].index].ai.process_turn(grid, {i, j}, extra_info, max_turns - turn_count)
+				local act, song_name = grid[i][j][2].ai.process_turn(grid, {i, j}, extra_info, max_turns - turn_count)
 				if act == 20 then
 					players[grid[i][j][2].index].wannaWalk = true
 					walk[players[grid[i][j][2].index]] = {i, j}
 				else
 					act_queue[#act_queue + 1] = {act, i, j}
 				end
-				if song_name then
+				if song_name and sound[song_name] and turn_count - grid[i][j][2].song_played > 3 then
 					sound[song_name]:play()
+					grid[i][j][2].song_played = turn_count
 				end
 			end
 		end

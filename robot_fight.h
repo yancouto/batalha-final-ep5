@@ -55,7 +55,14 @@ Position getNeighbor(Position pos, Direction dir);
 	Note que o nome é restrito a MAX_NOME caracteres, o resto será apagado.
 	Você deve limpar sua própria memória se alocou alguma.
 */
-void setName(char *name);
+void setName(const char *name);
+
+/*
+	Toca o arquivo de som chamado songName que está na pasta sound. Chame essa função durante a execução do processTurn.
+	Você deve limpar sua própria memória se alocou alguma. O nome é restrito a 100 caracteres.
+	NÃO ABUSE. por favor.
+*/
+void playSong(const char *songName);
 
 /*
 	IMPLEMENTAR

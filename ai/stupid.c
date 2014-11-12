@@ -19,6 +19,15 @@ Action bestTurn(Direction from, Direction to) {
 	else return TURN_RIGHT;
 }
 
+Action shoot(Direction from, Direction to) {
+	if(to == ((from + 1) % 6))
+		return SHOOT_RIGHT;
+	else if(to == from)
+		return SHOOT_CENTER;
+	else
+		return SHOOT_LEFT;
+}
+
 int isEmptyControl(Tile *t) {
 	return t->isControlPoint && t->type == NONE;
 }
@@ -51,7 +60,7 @@ Action processTurn(Grid *g, Position p, int turnsLeft) {
 	if(r->bullets == 0 || charging) {
 		charging = 1;
 		if(g->map[p.x][p.y].isControlPoint) {
-			if(r->bullets > 30)
+			if(r->bullets >= 30)
 				charging = 0;
 			return STAND;
 		}
@@ -67,8 +76,10 @@ Action processTurn(Grid *g, Position p, int turnsLeft) {
 			return TURN_LEFT;
 	}
 	else if(find(g, p, isRobot)) {
-		if(lookDir == r->dir)
-			return SHOOT_CENTER;
+		if(((6 + lookDir - r->dir) % 6) <= 1) {
+			playSong("morra.ogg");
+			return shoot(r->dir, lookDir);
+		}
 		else
 			return bestTurn(r->dir, lookDir);
 	}
