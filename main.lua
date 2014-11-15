@@ -2,9 +2,9 @@ local collision_damage = 5
 local projectile_damage = 10
 local empty_damage = 5
 local control_point = {
-	score = 10,
-	bullets = 10,
-	obstacles = 5
+	score = 5,
+	bullets = 7,
+	obstacles = 3
 }
 local max_turns = 50
 local obstacle_turns = 5
@@ -421,7 +421,11 @@ function do_turn()
 					act_queue[#act_queue + 1] = {act, i, j}
 				end
 				if song_name and sound[song_name] and turn_count - grid[i][j][2].song_played > 3 then
-					sound[song_name]:play()
+					if sound[song_name]:isPlaying() then
+						sound[song_name]:stop()
+					else
+						sound[song_name]:play()
+					end
 					grid[i][j][2].song_played = turn_count
 				end
 			end
